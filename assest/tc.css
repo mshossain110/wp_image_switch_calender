@@ -1,0 +1,45 @@
+
+div#tamil_calender {
+    width: 100%;
+    overflow: hidden;
+    display: block;
+}
+.tc-inner {
+    border: 1px solid #ddd;
+    padding: 5px;
+}
+.tc-header {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+.ui-datepicker {
+    width: 13em;
+    padding: .2em .2em 0;
+    display: none;
+    font-size: 17px !important;
+}
+.tc-image {
+    margin: 0 auto;
+    display: flex;
+    padding: 20px;
+}
+div#image-pregiew, div#image-pregiew img {
+    width: 100%;
+}
+#tc-loading {
+    display: block;
+    width: 100%;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    #tamil_calender .btn-group button {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+    #tamil_calender #tc-stime {
+        font-size: 14px;
+    }
+}
