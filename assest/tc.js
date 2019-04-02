@@ -6,7 +6,7 @@
         $('#tc-loading').show();
         
 		$.ajax({
-			url: TC.ajaxurl,
+			url: WP_ISC.ajaxurl,
 			type: 'get',
 			data: {
 				action: 'get_image',

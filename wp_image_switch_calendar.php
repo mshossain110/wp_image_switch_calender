@@ -16,14 +16,14 @@ if ( !function_exists( 'add_action' ) ) {
 	exit;
 }
 
-define( 'TAMIL_CALENDAT', '0.0.1' );
-register_activation_hook( __FILE__, array( 'TamilCalender', 'plugin_activation' ) );
-register_deactivation_hook( __FILE__, array( 'TamilCalender', 'plugin_deactivation' ) );
+define( 'WP_ISC', '0.0.1' );
+register_activation_hook( __FILE__, array( 'WP_Image_Switch_Calendar', 'plugin_activation' ) );
+register_deactivation_hook( __FILE__, array( 'WP_Image_Switch_Calendar', 'plugin_deactivation' ) );
 
-add_action( 'plugins_loaded', array( 'TamilCalender', 'init' ) );
+add_action( 'plugins_loaded', array( 'WP_Image_Switch_Calendar', 'init' ) );
 
 
-class TamilCalender {
+class WP_Image_Switch_Calendar {
 
 	private static $initiated = false;
 
@@ -35,7 +35,7 @@ class TamilCalender {
 
 	public static function init() {
 
-		if (!(self::$initiated instanceof TamilCalender )) {
+		if (!(self::$initiated instanceof WP_Image_Switch_Calendar )) {
 			self::$initiated = new self();
 		}
 
@@ -47,24 +47,18 @@ class TamilCalender {
 	 * Initializes WordPress hooks
 	 */
 	private function init_hooks() {
-		add_shortcode( 'tamil_calender', array($this, 'tamil_calender_shortcode') );
-		add_action( 'wp_ajax_nopriv_get_image', array($this, 'get_image')  );
-		add_action( 'wp_ajax_get_image', array($this, 'get_image') );
+		add_shortcode( 'wp_image_switch_calendar', array($this, 'wp_image_switch_calendar_shortcode') );
+		add_action( 'wp_ajax_nopriv_get_image', array($this, 'isc_get_image')  );
+		add_action( 'wp_ajax_get_image', array($this, 'isc_get_image') );
 		// add_action( 'edit_attachment', array ( $this, 'save_attachment_mb_data'), 10, 1 );
 		// add_filter( 'attachment_fields_to_edit', array( $this, 'applyFilter' ), 11, 2 );
-		add_action('admin_enqueue_scripts', array($this, 'enqueue_date_picker'));
-		add_action( 'admin_init', array($this, 'add_tc_attachment_meta' ));
-		add_action('edit_attachment', array($this, 'save_tc_attachment_meta') );
+		add_action('admin_enqueue_scripts', array($this, 'wp_isc_admin_enqueue_date_picker'));
+		add_action( 'admin_init', array($this, 'add_wp_isc_attachment_meta' ));
+		add_action('edit_attachment', array($this, 'save_wp_isc_attachment_meta') );
 	}
 
-	public function tamil_calender_shortcode( $atts ) {
-		// $a = shortcode_atts( array(
-		// 	'foo' => 'something',
-		// 	'bar' => 'something else',
-		// ), $atts );
-		//
-		//
-		$this->tc_include_script ();
+	public function wp_image_switch_calendar_shortcode( $atts ) {
+		$this->wp_isc_include_script ();
 		$view = plugin_dir_path( __FILE__ ).'calendar_view.php';
 
 		ob_start();
@@ -78,7 +72,7 @@ class TamilCalender {
 	 * Load all require style and css;
 	 * 
 	 */
-	public function tc_include_script () {
+	public function wp_isc_include_script () {
 		$file ='assest/tc.js';
 		$css = 'assest/tc.css';
 
@@ -91,13 +85,13 @@ class TamilCalender {
 		);
 
 		wp_enqueue_script( 
-			'tc_js',
+			'wp_isc_js',
 			plugin_dir_url( __FILE__ ) . $file,
-			[ 'jquery', 'jquery-ui-datepicker', 'jquery-touch-punch', 'fancyjs'],
-			filemtime(plugin_dir_path( __FILE__ ).$file),
+			[ 'jquery', 'jquery-ui-datepicker', 'jquery-touch-punch', 'fancyjs' ],
+			filemtime( plugin_dir_path( __FILE__ ) . $file ),
 			true
 		);
-		wp_localize_script( 'tc_js', 'TC', array(
+		wp_localize_script( 'wp_isc_js', 'WP_ISC', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' )
 		));
 
@@ -109,7 +103,7 @@ class TamilCalender {
 		);
 
 		wp_enqueue_style(
-			'tc_css',
+			'wp_isc_css',
 			plugin_dir_url( __FILE__ ) . $css,
 			['fancy_css'],
 			filemtime(plugin_dir_path( __FILE__ ).$css)
@@ -121,10 +115,10 @@ class TamilCalender {
         );
 	}
 
-	public function enqueue_date_picker () {
+	public function wp_isc_admin_enqueue_date_picker () {
 		$file ='assest/tc-admin.js';
 		wp_enqueue_script( 
-			'tc_admin',
+			'wp_isc_admin',
 			plugin_dir_url( __FILE__ ) . $file,
 			[ 'jquery', 'jquery-ui-datepicker', 'jquery-touch-punch', 'media-editor' ],
 			filemtime(plugin_dir_path( __FILE__ ).$file),
@@ -159,7 +153,7 @@ class TamilCalender {
 //     error_log(print_r($post_id, true));
 // }
 
-	public function get_image () {
+	public function isc_get_image () {
 		$get = $_GET;
 		$args = [
 			'post_type' => 'attachment',
@@ -170,10 +164,10 @@ class TamilCalender {
 		wp_send_json_success($post);
 	}
 
-	public function add_tc_attachment_meta(){
+	public function add_wp_isc_attachment_meta(){
    		add_meta_box( 'custom-attachment-meta-box', 
              'Tamil Calndar Date', 
-             array($this, 'tc_attachment_meta_box_callback'),
+             array($this, 'wp_isc_attachment_meta_box_callback'),
              'attachment',
              'normal',
              'low');
@@ -181,7 +175,7 @@ class TamilCalender {
 
 
 
-	public function tc_attachment_meta_box_callback () {
+	public function wp_isc_attachment_meta_box_callback () {
 		     global $post; 
      		$value = get_post_meta($post->ID, 'tc-image-date', 1);
 		?>
@@ -194,7 +188,7 @@ class TamilCalender {
 		<?php
 	}
 
-	function save_tc_attachment_meta(){
+	function save_wp_isc_attachment_meta(){
 	     global $post; 
 	     $tc = sanitize_text_field($_POST['tc-image-date']);
 
